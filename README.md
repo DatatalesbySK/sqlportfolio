@@ -63,3 +63,14 @@ SELECT location, date, total_cases, total_deaths,
        (total_deaths / total_cases) * 100 AS DeathPercentage
 FROM portfoliosql..coviddeaths
 WHERE location LIKE '%India%'
+
+
+-- Rolling People Vaccinated using Window Function
+SELECT dea.location, dea.date, vac.new_vaccinations,
+       SUM(CONVERT(int, vac.new_vaccinations))
+       OVER(PARTITION BY dea.location ORDER BY dea.date) AS RollingPeopleVaccinated
+FROM portfoliosql..coviddeaths dea
+JOIN portfoliosql..covidvaccinations vac
+  ON dea.location = vac.location AND dea.date = vac.date
+
+
